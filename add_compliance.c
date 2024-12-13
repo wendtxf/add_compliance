@@ -2,102 +2,85 @@
 #include <stdlib.h>
 #include <locale.h>
 
-int main() {
-    // ConfiguraÁıes para exibir acentuaÁ„o no CMD
+int main(){
+    // Configura√ß√µes para exibir acentua√ß√£o no CMD
     setlocale(LC_ALL, "");
     system("chcp 65001 > nul");
-    system("color a");
 
-    // Verifica se o programa est· sendo executado como administrador
-    system("cls");
+    system("color a");
     printf("=======================================\n");
     printf("    INICIANDO SCRIPT DE COMPLIANCE     \n");
     printf("=======================================\n\n");
-    printf("Verificando permissıes de administrador...\n");
-    int status = system("net session >nul 2>&1");
-    if (status != 0) {
-        printf("\nERRO: Este programa deve ser executado como administrador.\n\n");
-        printf("Por favor, execute novamente clicando com o bot„o direito no arquivo e escolhendo 'Executar como administrador'.\n\n");
-        printf("Pressione ENTER para sair.\n");
-        getchar();
-        return 1;
-    }
-    printf("Permissıes de administrador verificadas com sucesso.");
 
-    // Parar o serviÁo MBAMAgent
-    system("cls");
-    printf("[1/7] Parando o serviÁo MBAMAgent...\n");
+    int status;
+
+    // Parar o servi√ßo MBAMAgent
+    printf("[1/7] Parando o servi√ßo MBAMAgent...\n");
     status = system("net stop MBAMAgent");
-    if (status != 0) {
-        printf("ERRO: N„o foi possÌvel parar o serviÁo MBAMAgent.\n");
+    if (status != 0){
+        printf("ERRO: N√£o foi poss√≠vel parar o servi√ßo MBAMAgent.\n");
         return 1;
     }
-    printf("ServiÁo MBAMAgent parado com sucesso.\n\n");
+    printf("Servi√ßo MBAMAgent parado com sucesso.\n\n");
 
-    // Importar configuraÁıes de registro
-    system("cls");
-    printf("[2/7] Aplicando configuraÁıes de registro para o BitLocker...\n");
+    // Importar configura√ß√µes de registro
+    printf("[2/7] Aplicando configura√ß√µes de registro para o BitLocker...\n");
     status = system("reg import \"\\\\brsaoapp121\\Installer_Bitlocker\\MBAM 2.5 SP1Installers\\Installers\\x64\\Bitlocker_frequency.reg\"");
-    if (status != 0) {
-        printf("ERRO: Falha ao aplicar o arquivo de registro. Verifique o caminho ou as permissıes.\n");
+    if (status != 0){
+        printf("ERRO: Falha ao aplicar o arquivo de registro. Verifique o caminho ou as permiss√µes.\n");
         return 1;
     }
-    printf("ConfiguraÁıes de registro aplicadas com sucesso.\n\n");
+    printf("Configura√ß√µes de registro aplicadas com sucesso.\n\n");
 
     // Abrir o MMC e aguardar fechamento
-    system("cls");
-    printf("[3/7] Abrindo o MMC para verificaÁ„o manual...\n");
+    printf("[3/7] Abrindo o MMC para verifica√ß√£o manual...\n");
     status = system("mmc");
-    if (status != 0) {
-        printf("ERRO: N„o foi possÌvel abrir o MMC.\n");
+    if (status != 0){
+        printf("ERRO: N√£o foi poss√≠vel abrir o MMC.\n");
         return 1;
     }
     printf("MMC fechado. Continuando...\n\n");
 
-    // Reiniciar o serviÁo MBAMAgent
-    system("cls");
-    printf("[4/7] Reiniciando o serviÁo MBAMAgent...\n");
+    // Reiniciar o servi√ßo MBAMAgent
+    printf("[4/7] Reiniciando o servi√ßo MBAMAgent...\n");
     status = system("net start MBAMAgent");
-    if (status != 0) {
-        printf("ERRO: Falha ao reiniciar o serviÁo MBAMAgent.\n");
+    if (status != 0){
+        printf("ERRO: Falha ao reiniciar o servi√ßo MBAMAgent.\n");
         return 1;
     }
-    printf("ServiÁo MBAMAgent iniciado com sucesso.\n\n");
+    printf("Servi√ßo MBAMAgent iniciado com sucesso.\n\n");
 
-    // Atualizar polÌticas de grupo
-    system("cls");
-    printf("[5/7] Atualizando as polÌticas de grupo...\n");
+    // Atualizar pol√≠ticas de grupo
+    printf("[5/7] Atualizando as pol√≠ticas de grupo...\n");
     status = system("gpupdate /force");
-    if (status != 0) {
-        printf("ERRO: N„o foi possÌvel atualizar as polÌticas de grupo.\n");
+    if (status != 0){
+        printf("ERRO: N√£o foi poss√≠vel atualizar as pol√≠ticas de grupo.\n");
         return 1;
     }
-    printf("PolÌticas de grupo atualizadas com sucesso.\n\n");
+    printf("Pol√≠ticas de grupo atualizadas com sucesso.\n\n");
 
-    // Abrir configuraÁıes "Sobre" para captura de tela
-    system("cls");
-    printf("[6/7] Abrindo configuraÁıes do sistema...\n");
+    // Exibir o nome do host e abrir configura√ß√µes "Sobre"
+    printf("[6/7] Abrindo configura√ß√µes do sistema para captura de tela...\n");
     status = system("start ms-settings:about");
-    if (status != 0) {
-        printf("ERRO: N„o foi possÌvel abrir as configuraÁıes do sistema.\n");
+    if (status != 0){
+        printf("ERRO: N√£o foi poss√≠vel abrir as configura√ß√µes do sistema.\n");
         return 1;
     }
-    printf("ConfiguraÁıes do sistema abertas com sucesso.\n\n");
+    printf("Configura√ß√µes do sistema abertas com sucesso.\n\n");
 
-    // Exibir protetores do BitLocker e Hostname para captura de tela
-    system("cls");
-    printf("[7/7] Exibindo protetores do BitLocker e Hostname...\n");
+    // Exibir protetores do BitLocker e Hostname
+    printf("[7/7] Obtendo protetores do BitLocker e Hostname...\n");
     status = system("manage-bde -protectors -get c:");
     status = system("hostname");
-    if (status != 0) {
-        printf("ERRO: N„o foi possÌvel obter as informaÁıes solicitadas.\n");
+    if (status != 0){
+        printf("ERRO: N√£o foi poss√≠vel obter as informa√ß√µes solicitadas.\n");
         return 1;
     }
-    printf("Protetores do BitLocker e Hostname exibidos com sucesso.\n\n");
+    printf("Informa√ß√µes exibidas com sucesso.\n\n");
 
     // Finalizar
     printf("=======================================\n");
-    printf("    SCRIPT CONCLUÕDO COM SUCESSO!      \n");
+    printf("    SCRIPT CONCLU√çDO COM SUCESSO!      \n");
     printf("=======================================\n");
     printf("Pressione ENTER para sair.\n");
     getchar();
